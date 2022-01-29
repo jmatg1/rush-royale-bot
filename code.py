@@ -1,20 +1,11 @@
 import os
 import time
-from datetime import datetime
 from PIL import Image
 from tkinter import Tk, Button, Text, END
 from tkinter import ttk
 import re
-import cv2
-import numpy as np
-import math
 import threading
-from threading import Thread  # threading is better than the thread module
 from subprocess import check_output
-import shutil
-
-import cv2
-import pytesseract
 from datetime import datetime
 
 tkWindow = Tk()
@@ -186,7 +177,7 @@ class Bot:
 
 
     def isFightScreen(self):
-        return self.getXYByColor((178,255,244), False, 1, (239, 1358), (239+76, 1358+45)) != False
+        return self.getXYByColor((178,255,244), False, 0, (239, 1358), (239+76, 1358+45)) != False
 
     def appClose(self):
         self.shell(f'am force-stop com.my.defense')
