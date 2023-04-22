@@ -7,10 +7,21 @@ import re
 import threading
 from subprocess import check_output
 from datetime import datetime
+import random
 
 tkWindow = Tk()
 tkWindow.geometry('400x250')
 tkWindow.title('Rush Royale Bot By Jmatg1')
+
+positionDeck = [
+(210, 990),(310, 990),(410, 990),(510, 990),(610, 990),
+(210, 1120),(310, 1120),(410, 1120),(510, 1120),(610, 1120),
+(210, 1230),(310, 1230),(410, 1230),(510, 1230),(610, 1230),
+]
+
+def getDeckCordForMerge():
+    return positionDeck[random.randint(0, 14)]
+
 
 
 class Bot:
@@ -110,15 +121,35 @@ class Bot:
             #     self.click(500, 1504)
             #     self.click(636, 1504)
 
+            if (self.getXYByColor((160,94,73), False, 1, (600, 334), (658, 400))):
+                self.runCount = 0
+                self.log('Detect Coop Screen. Exit...')
+                self.click(90, 1510)
+                time.sleep(1)
+                self.getScreen()
+                
             if self.isMainScreen():
                 self.runCount = 0
                 self.log('Is Main Screen')
                 if self.coopMode:
                     self.log('Click Coop')
                     self.click(660, 1300)
-                    self.log('Click Coop Random')
-                    self.click(400, 700)
-                    time.sleep(5)
+                    time.sleep(2)
+                    self.log('Swipe Up')
+                    self.shell(f'input swipe 800 800 800 1400 300')
+                    #self.log('Open Glava 1')
+                    #self.click(809, 607)
+                    self.log('Open Glava 2')
+                    self.click(520, 1000)
+                    #self.log('Swipe Down')
+                    #self.shell(f'input swipe 800 900 800 600 300')
+                    #time.sleep(5)
+                    self.log('Clicl Play btn')
+                    #self.click(450, 730)
+                    self.click(450, 1383)
+                    self.log('Clicl Random btn')
+                    self.click(630, 630)
+                    continue
                 else:
                     self.log('Click Match')
                     self.click(250, 1300)
@@ -127,49 +158,79 @@ class Bot:
             if self.isFightScreen():
                 self.log(f'isFightScreen')
                 self.runCount = 0
-                coordMana = self.getXYByColor((245, 190, 48), False, 10, (338, 1290), (574, 1414))
-                if coordMana:
+                cord = self.getXYByColor((245, 190, 48), True, 10, (352, 1332), (392, 1392))
+                while(cord):
+                    self.log(cord)
                     self.log(f'Click Mana {self.countMana}')
                     self.countMana = self.countMana + 1
-                    self.click(450, 1360)
-
+                    self.click(450, 1360, False)
+                    cord = self.getXYByColor((245, 190, 48), True, 10, (352, 1332), (392, 1392))
+                    if self.countMana >= 60:
+                        break
+                    
+                #self.log("Поставлены все пешки?")
+                #coordManaGray = self.getXYByColor((196,196,196), False, 10, (338, 1290), (574, 1414))
+                #if coordMana and self.countMana == 14:
+                self.log(f'Click Deck')
+                self.click(80, 1500, False)
+                self.click(220, 1500, False)
+                self.click(360, 1500, False)
+                self.click(480, 1500, False)
+                self.click(620, 1500, False)
+                if self.countMana > 14:
+                    self.log(f'Merge Deck')
+                    for x in range(30):
+                        m1 = getDeckCordForMerge()
+                        m2 = getDeckCordForMerge()
+                        self.shell(f'input swipe {m1[0]} {m1[1]} {m2[0]} {m2[1]} 210')
+                # Определяем есть ли на скрине кнопка поделиться, если есть значит скрин результат победы. Кликаем на кнопку продолжить
+            if (self.getXYByColor((38, 113, 230), False, 5, (586, 1488), (658, 1546))):
+                self.runCount = 0
+                self.countMana = 0
+                self.log('Detect Finale Battle Screen. Exit...')
+                self.click(434, 1512)
+                time.sleep(1)
+                self.getScreen()
             if (self.getXYByColor((185,58,60), False, 1, (776, 490), ((776 + 62), (490 + 64)))):
                 self.runCount = 0
                 self.log('Detect Support Box. Exit...')
-                self.click(570, 1350)
+                self.click(318, 1368)
                 time.sleep(1)
                 self.getScreen()
 
+
+            if (self.getXYByColor((38,113,230), False, 5, (482, 888), (526, 938))):
+                self.log('Detect LOOCK ADS Bitch. Exit...')
+                self.click(590, 922)
+                self.getScreen()
+                
             if (self.getXYByColor((186,58,62), False, 1, (618, 8), ((618 + 282), (8 + 1348)))):
-                self.runCount = 0
                 self.log('Detect Ads. Exit...')
                 self.keyBack()
                 time.sleep(1)
                 self.getScreen()
-
+                continue
             if (self.getXYByColor((247,221,85), False, 0, (30, 1276), (46, 1276 + 24))):
-                self.runCount = 0
                 self.log('Detect Arena Screen. Exit...')
                 self.keyBack()
                 time.sleep(1)
                 self.getScreen()
-
-            if (self.getXYByColor((40,118,239), False, 5, (327, 1443), (582, 1530))):
-                self.runCount = 0
-                self.log('Click Colllect')
+            cordRedCross = self.getXYByColor((190,61,65), False, 5, (764, 248), (850, 790))
+            if (cordRedCross):
+                self.log('Detect red cross')
                 self.countMana = 0
-                self.click(400, 1485)
-                self.click(400, 1485)
-                self.click(400, 1485)
+                self.click(cordRedCross[0], cordRedCross[1])
 
 
             self.runCount = self.runCount + 1
 
             if (self.runCount >=30 ):
+                self.log('Close APP. Wait 5 min')
                 self.appClose()
-                time.sleep(10)
+                time.sleep(300)
+                self.log('Start APP. Wait 1 min')
                 self.appRun()
-                time.sleep(30)
+                time.sleep(60)
                 self.runCount = 0
 
     def isMainScreen(self):
